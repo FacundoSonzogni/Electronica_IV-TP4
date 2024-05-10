@@ -18,11 +18,8 @@
 
     .type comparaMemoria, %function
     .global comparaMemoria
-comparaMemoria:
-    push {R4-R11,LR}
-    
+comparaMemoria:  
     mov RO, #0 // En R0 se guardará el int de la salida (-1, 0, 1). Por defecto vale 0
-    bx LR
 
     mov R1, R1 // En R1 se guarda "izquierda"
     mov R2, R2 // En R2 se guarda "derecha"
@@ -57,5 +54,5 @@ comparaMemoria:
             b loop1
 
     end:
-        pop {R4-R11,PC}
+        bx LR
     .size comparaMemoria, . - comparaMemoria
