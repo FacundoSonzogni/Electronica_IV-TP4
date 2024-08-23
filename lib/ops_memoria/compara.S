@@ -10,49 +10,36 @@
  * izquierda es el menor y 1 si en la primera diferencia el valor de la
  * izquierda es mayor
  * 
- * @param izquierda Dirección base de la primera región
- * @param derecha Dirección base de la segunda región
- * @param tamano tamaño de las regiones
+ * @param izquierda Dirección base de la primera región (R0)
+ * @param derecha Dirección base de la segunda región (R1)
+ * @param tamano tamaño de las regiones (R2)
  * @return int 
  */
 
     .type comparaMemoria, %function
     .global comparaMemoria
-comparaMemoria:  
-    mov RO, #0 // En R0 se guardará el int de la salida (-1, 0, 1). Por defecto vale 0
 
-    mov R1, R1 // En R1 se guarda "izquierda"
-    mov R2, R2 // En R2 se guarda "derecha"
-    mov R3, R3 // En R3 se guarda "tamaño"
+comparaMemoria:
 
-    mov R4, #0 // En R4 se guarda un índice "i" que cuenta el número de byte dentro del areglo. Se inicializa en 0
+    ldrb r3, [r0], #1        // Carga el byte de R0 en R3 y aumenta R0
+    ldrb r12, [r1], #1       // Carga el byte de R1 en R12 y aumenta R1
+    cmp r3, r12              
+    bne comparacion_distintos // Salta si R3 no es igual a R12
 
-    loop1:
-        cmp R4, R3
-        bge end
+    subs r2, #1             
+    bne comparaMemoria        
 
-        condicional1:
-            ldr R5, [R1, R4, lsl #2] // En R5 se guarda el í-esimo byte de "izquierda"
-            ldr R6, [R2, R4, lsl #2] // En R6 se guarda el i-ésimo byte de "derecha"
+    movs r0, #0              
+    b fin
 
-            cmp R5, R6
-            beq incrementar_indice // Si izq[i] = der[i] R0 se mantiene en 0 y pasa al siguiente byte
+comparacion_distintos:
+    cmp r3, r12
+    bgt izquierda_mayor      // Salta si R3 > R12
+    movs r0, #-1             
+    b fin
 
-            condicional2:
-                cmp R2, R1
-                bge tomar_valor_1 // Si der[i] < izq[i], R0 toma el valor 1 y finaliza
+izquierda_mayor:
+    movs r0, #1             
 
-                mov R0, #-1  // Si der[i] > izq[i], R0 toma el valor -1 y finaliza
-                b end
-
-            tomar_valor_1:
-                mov R0, #1
-                b end
-
-        incrementar_indice:
-            mov R4, R4, #1
-            b loop1
-
-    end:
-        bx LR
-    .size comparaMemoria, . - comparaMemoria
+fin:
+    bx lr
